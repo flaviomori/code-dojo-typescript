@@ -12,3 +12,56 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+
+  # Postgres dedicado da suíte de testes — isolado do banco do app, sem porta publicada
+  # (evita conflito na 5432). Um `make test` nunca toca os dados que o dev olha no app.
+  postgres-test:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: payouts
+      POSTGRES_PASSWORD: payouts
+      POSTGRES_DB: payouts
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payouts"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # App Express: Node roda dentro do container; conecta no Postgres pela rede do compose.
+  app:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_PORT: "5432"
+      DATABASE_NAME: payouts
+      DATABASE_USER: payouts
+      DATABASE_PASSWORD: payouts
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - node-modules:/app/node_modules
+    command: npm run dev
+
+  # Suíte de testes (Vitest): mesma imagem, aponta para o postgres-test.
+  test:
+    build: .
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    environment:
+      DATABASE_HOST: postgres-test
+      DATABASE_PORT: "5432"
+      DATABASE_NAME: payouts
+      DATABASE_USER: payouts
+      DATABASE_PASSWORD: payouts
+    volumes:
+      - .:/app
+      - node-modules:/app/node_modules
+    command: npm test
+
+volumes:
+  node-modules:

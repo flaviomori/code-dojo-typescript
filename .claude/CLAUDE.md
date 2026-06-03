@@ -11,18 +11,19 @@ Sistema interno de repasses a médicos credenciados.
   - **Repository** — acesso a banco via `pg.Pool`.
 - **Auth**: header `X-Operator-Id` obrigatório. Extraído via `requireAuth(req)`.
 - **Erros**: `NotFoundError`, `BadRequestError` → middleware global traduz para HTTP.
-- **Testes**: Testcontainers (Postgres real). Sem in-memory.
+- **Testes**: Postgres real via compose (serviço `postgres-test`). Sem in-memory.
 - **Money**: `decimal.js` (serializado como `string` nos DTOs).
 
 ## Rodando local
 
+Pré-requisito: Docker (e Git). O Node roda dentro do container.
+
 ```bash
-docker compose up -d
-npm run dev
+make app    # sobe Postgres + app em :8080 (hot-reload)
 ```
 
 ## Testes
 
 ```bash
-npm test
+make test   # roda a suíte (Vitest) contra o postgres-test
 ```

@@ -4,12 +4,16 @@ Sistema de repasses a médicos credenciados — Node/TypeScript + Express + Post
 
 ## Setup
 
+Pré-requisitos: **Docker** e **Git**. Nada mais — o Node roda dentro do container.
+
 1. `git clone` este repo.
-2. `docker compose up -d` (sobe Postgres na porta 5432).
-3. `npm install`.
-4. `npm run dev`.
-5. Smoke: `curl -H "X-Operator-Id: 99999999-9999-9999-9999-999999999999" http://localhost:8080/practitioners/11111111-1111-1111-1111-111111111111`
-6. Rodar os testes: `npm test`.
+2. `make app` — sobe Postgres + app em `http://localhost:8080` (hot-reload via `tsx watch`). A 1ª execução constrói a imagem e instala deps (~5-10 min); as seguintes são rápidas.
+3. Smoke (em outro terminal, com o app de pé): `make smoke`.
+4. Testes: `make test`.
+
+Comandos: `make app`, `make test`, `make smoke`, `make sh` (shell para npm ad-hoc), `make logs`, `make down`.
+
+Loop de edição: edite `src/` no host — o `tsx watch` recarrega sozinho dentro do container.
 
 ## Endpoints disponíveis
 

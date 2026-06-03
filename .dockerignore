@@ -1,0 +1,8 @@
+# A imagem instala deps via `npm ci` (COPY package*.json); o resto do código é
+# bind-mountado em runtime. Isto enxuga o build context.
+.git/
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
